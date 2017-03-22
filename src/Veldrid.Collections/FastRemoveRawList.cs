@@ -32,21 +32,27 @@ namespace Veldrid.Collections
 
         public ArraySegment<T> ArraySegment => new ArraySegment<T>(_items, 0, (int)_count);
 
-        public T this[uint index]
+        public ref T this[uint index]
         {
             get
             {
                 ValidateIndex(index);
-                return _items[index];
-            }
-            set
-            {
-                ValidateIndex(index);
-                _items[index] = value;
+                return ref _items[index];
             }
         }
 
         public void Add(T item)
+        {
+            if (_count == _items.Length)
+            {
+                Array.Resize(ref _items, (int)(_items.Length * GrowthFactor));
+            }
+
+            _items[_count] = item;
+            _count += 1;
+        }
+
+        public void Add(ref T item)
         {
             if (_count == _items.Length)
             {

@@ -37,31 +37,21 @@ namespace Veldrid.Collections
 
         public ArraySegment<T> ArraySegment => new ArraySegment<T>(_items, 0, (int)_count);
 
-        public T this[uint index]
+        public ref T this[uint index]
         {
             get
             {
                 ValidateIndex(index);
-                return _items[index];
-            }
-            set
-            {
-                ValidateIndex(index);
-                _items[index] = value;
+                return ref _items[index];
             }
         }
 
-        public T this[int index]
+        public ref T this[int index]
         {
             get
             {
                 ValidateIndex(index);
-                return _items[index];
-            }
-            set
-            {
-                ValidateIndex(index);
-                _items[index] = value;
+                return ref _items[index];
             }
         }
 
