@@ -25,13 +25,25 @@ namespace Veldrid.Collections
             Allocate(capacity);
         }
 
-        public IntPtr Data => new IntPtr(_dataPtr);
+        public IntPtr Data
+        {
+            get
+            {
+                ThrowIfDisposed();
+                return new IntPtr(_dataPtr);
+            }
+        }
 
         public uint Count
         {
-            get { return _count; }
+            get
+            {
+                ThrowIfDisposed();
+                return _count;
+            }
             set
             {
+                ThrowIfDisposed();
                 if (value > _elementCapacity)
                 {
                     uint newLements = value - Count;
@@ -47,6 +59,7 @@ namespace Veldrid.Collections
         {
             get
             {
+                ThrowIfDisposed();
 #if VALIDATE
                 if (index >= _count)
                 {
@@ -63,6 +76,7 @@ namespace Veldrid.Collections
         {
             get
             {
+                ThrowIfDisposed();
 #if VALIDATE
                 if (index < 0 || index >= _count)
                 {
@@ -75,25 +89,37 @@ namespace Veldrid.Collections
             }
         }
 
-        public ReadOnlyNativeListView<T> GetReadOnlyView() => new ReadOnlyNativeListView<T>(this, 0, _count);
+        public ReadOnlyNativeListView<T> GetReadOnlyView()
+        {
+            ThrowIfDisposed();
+            return new ReadOnlyNativeListView<T>(this, 0, _count);
+        }
 
         public ReadOnlyNativeListView<T> GetReadOnlyView(uint start, uint count)
         {
+            ThrowIfDisposed();
 #if VALIDATE
             if (start + count > _count)
             {
                 throw new ArgumentOutOfRangeException();
             }
 #else
-            Debug.Assert(start + count < _count);
+            Debug.Assert(start + count <= _count);
 #endif
             return new ReadOnlyNativeListView<T>(this, start, count);
         }
 
-        public View<ViewType> GetView<ViewType>() where ViewType : struct => new View<ViewType>(this);
+        public View<ViewType> GetView<ViewType>() where ViewType : struct
+        {
+            ThrowIfDisposed();
+            return new View<ViewType>(this);
+        }
+
+        public bool IsDisposed => _dataPtr == null;
 
         public void Add(ref T item)
         {
+            ThrowIfDisposed();
             if (_count == _elementCapacity)
             {
                 CoreResize((uint)(_elementCapacity * GrowthFactor));
@@ -105,6 +131,7 @@ namespace Veldrid.Collections
 
         public void Add(T item)
         {
+            ThrowIfDisposed();
             if (_count == _elementCapacity)
             {
                 CoreResize((uint)(_elementCapacity * GrowthFactor));
@@ -116,6 +143,7 @@ namespace Veldrid.Collections
 
         public void Add(void* data, uint numElements)
         {
+            ThrowIfDisposed();
             uint needed = _count + numElements;
             if (numElements > _elementCapacity)
             {
@@ -128,6 +156,7 @@ namespace Veldrid.Collections
 
         public bool Remove(ref T item)
         {
+            ThrowIfDisposed();
             bool result = IndexOf(ref item, out uint index);
             if (result)
             {
@@ -141,6 +170,7 @@ namespace Veldrid.Collections
 
         public void RemoveAt(uint index)
         {
+            ThrowIfDisposed();
 #if VALIDATE
             if (index >= _count)
             {
@@ -154,11 +184,13 @@ namespace Veldrid.Collections
 
         public void Clear()
         {
+            ThrowIfDisposed();
             _count = 0;
         }
 
         public bool IndexOf(ref T item, out uint index)
         {
+            ThrowIfDisposed();
             byte* itemPtr = (byte*)Unsafe.AsPointer(ref item);
             for (index = 0; index < _count; index++)
             {
@@ -174,6 +206,7 @@ namespace Veldrid.Collections
 
         public bool IndexOf(T item, out uint index)
         {
+            ThrowIfDisposed();
             byte* itemPtr = (byte*)Unsafe.AsPointer(ref item);
             for (index = 0; index < _count; index++)
             {
@@ -189,6 +222,7 @@ namespace Veldrid.Collections
 
         public void Resize(uint elementCount)
         {
+            ThrowIfDisposed();
             CoreResize(elementCount);
             if (_elementCapacity < _count)
             {
@@ -237,12 +271,34 @@ namespace Veldrid.Collections
             _count -= 1;
         }
 
-        public void Dispose()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if !VALIDATE
+        [Conditional("DEBUG")]
+#endif
+        private void ThrowIfDisposed()
         {
-            Marshal.FreeHGlobal(new IntPtr(_dataPtr));
+#if VALIDATE
+            if (_dataPtr == null)
+            {
+                throw new ObjectDisposedException(nameof(Data));
+            }
+#else
+            Debug.Assert(_dataPtr != null, "NativeList is disposed.");
+#endif
         }
 
-        public Enumerator GetEnumerator() => new Enumerator(_dataPtr, _count);
+        public void Dispose()
+        {
+            ThrowIfDisposed();
+            Marshal.FreeHGlobal(new IntPtr(_dataPtr));
+            _dataPtr = null;
+        }
+
+        public Enumerator GetEnumerator()
+        {
+            ThrowIfDisposed();
+            return new Enumerator(_dataPtr, _count);
+        }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 

@@ -270,6 +270,25 @@ namespace Veldrid.Collections.Tests
             Assert.Equal(x, list[index]);
         }
 
+        [Theory]
+        [InlineData(new int[] { 1, 2, 3, 4, 5, }, 3, 2)]
+        [InlineData(new int[] { 2, 4, 6, 8, 10, 12 }, 12, 5)]
+        [InlineData(new byte[] { 0, 0, 0, 1, 2, }, 1, 3)]
+        [InlineData(new short[] { 0, 0, 0, 0, 0, 10, 100}, 0, 0)]
+        [InlineData(new long[] { long.MinValue, long.MaxValue, long.MaxValue / 2, long.MinValue + 500 }, long.MaxValue, 1)]
+        public static void IndexOf2<T>(T[] elements, T element, uint expected) where T : struct
+        {
+            NativeList<T> list = new NativeList<T>((uint)elements.Length);
+            foreach (T item in elements)
+            {
+                list.Add(item);
+            }
+
+            Assert.True(list.IndexOf(ref element, out uint index));
+            Assert.Equal(expected, index);
+            Assert.Equal(element, list[index]);
+        }
+
         [Fact]
         public static void IndexOfCompoundType()
         {
