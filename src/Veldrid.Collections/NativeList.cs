@@ -25,6 +25,12 @@ namespace Veldrid.Collections
             Allocate(capacity);
         }
 
+        public NativeList(uint capacity, uint count)
+        {
+            Allocate(capacity);
+            Count = count;
+        }
+
         public IntPtr Data
         {
             get

@@ -28,6 +28,15 @@ namespace Veldrid.Collections.Tests
         }
 
         [Fact]
+        public static void Ctor2()
+        {
+            NativeList<int> list = new NativeList<int>(2, 2);
+            list[0] = 1;
+            list[1] = 2;
+            Assert.Throws<ArgumentOutOfRangeException>(() => list[2] = 3);
+        }
+
+        [Fact]
         public static void Remove()
         {
             NativeList<int> list = CreateListWithRange(5);
