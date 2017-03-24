@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Veldrid.Collections\Veldrid.Collections.csproj">
-        <AdditionalProperties>Validate=$(Validate)</AdditionalProperties>
+      <AdditionalProperties>Validate=$(Validate)</AdditionalProperties>
     </ProjectReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
     <PackageReference Include="xunit" Version="2.2.0" />

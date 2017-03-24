@@ -274,7 +274,7 @@ namespace Veldrid.Collections.Tests
         [InlineData(new int[] { 1, 2, 3, 4, 5, }, 3, 2)]
         [InlineData(new int[] { 2, 4, 6, 8, 10, 12 }, 12, 5)]
         [InlineData(new byte[] { 0, 0, 0, 1, 2, }, 1, 3)]
-        [InlineData(new short[] { 0, 0, 0, 0, 0, 10, 100}, 0, 0)]
+        [InlineData(new short[] { 0, 0, 0, 0, 0, 10, 100 }, 0, 0)]
         [InlineData(new long[] { long.MinValue, long.MaxValue, long.MaxValue / 2, long.MinValue + 500 }, long.MaxValue, 1)]
         public static void IndexOf2<T>(T[] elements, T element, uint expected) where T : struct
         {
@@ -379,6 +379,18 @@ namespace Veldrid.Collections.Tests
             Assert.Equal(2f, items[3u]);
             Assert.Equal(1f, items[4u]);
             Assert.Equal(0f, items[5u]);
+        }
+
+        [Fact]
+        public static void GetAddress()
+        {
+            NativeList<int> list = CreateListWithRange(20);
+            IntPtr baseAddress = list.Data;
+            Assert.Equal(baseAddress, list.GetAddress(0u));
+            for (uint i = 0; i < list.Count; i++)
+            {
+                Assert.Equal(IntPtr.Add(baseAddress, sizeof(int) * (int)i), list.GetAddress(i));
+            }
         }
 
         private static NativeList<int> CreateListWithRange(uint count, int start = 0, int increment = 1)

@@ -220,6 +220,21 @@ namespace Veldrid.Collections
             return false;
         }
 
+        public IntPtr GetAddress(uint index)
+        {
+            ThrowIfDisposed();
+#if VALIDATE
+            if (index >= _count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+#else
+            Debug.Assert(index < _count);
+#endif
+            return new IntPtr(_dataPtr + (index * s_elementByteSize));
+        }
+
         public void Resize(uint elementCount)
         {
             ThrowIfDisposed();
