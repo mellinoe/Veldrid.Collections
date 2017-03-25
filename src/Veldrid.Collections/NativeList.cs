@@ -31,6 +31,12 @@ namespace Veldrid.Collections
             Count = count;
         }
 
+        public NativeList(NativeList<T> existingList)
+        {
+            Allocate(existingList._elementCapacity);
+            Unsafe.CopyBlock(_dataPtr, existingList._dataPtr, existingList._count * s_elementByteSize);
+        }
+
         public IntPtr Data
         {
             get
@@ -314,6 +320,17 @@ namespace Veldrid.Collections
             Marshal.FreeHGlobal(new IntPtr(_dataPtr));
             _dataPtr = null;
         }
+
+#if DEBUG
+        ~NativeList()
+        {
+            if (_dataPtr != null)
+            {
+                Debug.WriteLine($"A NativeList<{typeof(T).Name}> was not properly disposed.");
+                Dispose();
+            }
+        }
+#endif
 
         public Enumerator GetEnumerator()
         {
