@@ -31,7 +31,15 @@ namespace Veldrid.Collections
             _items = capacity == 0 ? Array.Empty<T>() : new T[capacity];
         }
 
-        public uint Count => _count;
+        public uint Count
+        {
+            get => _count;
+            set
+            {
+                Resize(value);
+            }
+        }
+
 
         public T[] Items => _items;
 
@@ -119,6 +127,12 @@ namespace Veldrid.Collections
         {
             ValidateIndex(index);
             _items[index] = item;
+        }
+
+        public void Resize(uint count)
+        {
+            Array.Resize(ref _items, (int)count);
+            _count = Math.Min(_count, (uint)_items.Length);
         }
 
         public void Replace(uint index, T item) => Replace(index, ref item);
