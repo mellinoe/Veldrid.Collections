@@ -132,7 +132,7 @@ namespace Veldrid.Collections
         public void Resize(uint count)
         {
             Array.Resize(ref _items, (int)count);
-            _count = Math.Min(_count, (uint)_items.Length);
+            _count = count;
         }
 
         public void Replace(uint index, T item) => Replace(index, ref item);
