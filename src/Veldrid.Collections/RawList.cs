@@ -8,6 +8,10 @@ using System.Diagnostics;
 
 namespace Veldrid.Collections
 {
+    /// <summary>
+    /// A resizable, generic list which exposes direct access to its underlying array.
+    /// </summary>
+    /// <typeparam name="T">The type of elements stored in the list.</typeparam>
     public class RawList<T> : IEnumerable<T>
     {
         private T[] _items;
