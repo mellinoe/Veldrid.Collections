@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Veldrid.Collections.Tests
@@ -97,6 +98,37 @@ namespace Veldrid.Collections.Tests
             {
                 Assert.Equal(i, list[i]);
             }
+        }
+
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(10)]
+        [InlineData(100)]
+        [InlineData(1000000)]
+        [Theory]
+        public void Enumerator_CorrectElementCount(uint itemCount)
+        {
+            RawList<uint> list = new RawList<uint>();
+            for (uint i = 0; i < itemCount; i++)
+            {
+                list.Add(i);
+            }
+
+            uint enumerated = 0;
+            foreach (uint value in list)
+            {
+                enumerated += 1;
+            }
+            Assert.Equal(enumerated, itemCount);
+
+            enumerated = 0;
+            var enumerator = list.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                enumerated += 1;
+            }
+            Assert.Equal(enumerated, itemCount);
         }
     }
 }

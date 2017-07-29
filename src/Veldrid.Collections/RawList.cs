@@ -285,7 +285,7 @@ namespace Veldrid.Collections
 
             public bool MoveNext()
             {
-                if (_currentIndex != _list._count - 1)
+                if (_currentIndex != _list._count)
                 {
                     _currentIndex += 1;
                     return true;
