@@ -118,14 +118,16 @@ namespace Veldrid.Collections.Tests
             uint enumerated = 0;
             foreach (uint value in list)
             {
+                Assert.Equal(value, enumerated);
                 enumerated += 1;
             }
             Assert.Equal(enumerated, itemCount);
 
             enumerated = 0;
-            var enumerator = list.GetEnumerator();
+            RawList<uint>.Enumerator enumerator = list.GetEnumerator();
             while (enumerator.MoveNext())
             {
+                Assert.Equal(enumerator.Current, enumerated);
                 enumerated += 1;
             }
             Assert.Equal(enumerated, itemCount);

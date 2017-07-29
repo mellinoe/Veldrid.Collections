@@ -272,12 +272,12 @@ namespace Veldrid.Collections
         public struct Enumerator : IEnumerator<T>
         {
             private RawList<T> _list;
-            private int _currentIndex;
+            private uint _currentIndex;
 
             public Enumerator(RawList<T> list)
             {
                 _list = list;
-                _currentIndex = 0;
+                _currentIndex = uint.MaxValue;
             }
 
             public T Current => _list._items[_currentIndex];
@@ -285,13 +285,8 @@ namespace Veldrid.Collections
 
             public bool MoveNext()
             {
-                if (_currentIndex != _list._count)
-                {
-                    _currentIndex += 1;
-                    return true;
-                }
-
-                return false;
+                _currentIndex += 1;
+                return _currentIndex < _list._count;
             }
 
             public void Reset()
